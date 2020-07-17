@@ -7,7 +7,7 @@ export class Shader {
     constructor(gl, vertexSrc, fragSrc) {
 
         this.gl = gl;
-        this.unif = [];
+        this.unif = {};
         this.program = this.buildShader(vertexSrc, fragSrc);
         this.getUniformLocations();
     }
@@ -110,7 +110,7 @@ export class Shader {
         let id = Matrix4.identity();
 
         // Set default uniforms
-        gl.uniform1i(this.unif.t0, 0);
+        gl.uniform1i(this.unif["t0"], 0);
         this.setVertexTransform(
             0, 0, 0, 
             1, 1, 1);
@@ -125,8 +125,8 @@ export class Shader {
 
         let gl = this.gl;
 
-        gl.uniform3f(this.unif.pos, x, y, z);
-        gl.uniform3f(this.unif.size, w, h, d);
+        gl.uniform3f(this.unif["pos"], x, y, z);
+        gl.uniform3f(this.unif["size"], w, h, d);
     }
 
 
@@ -134,15 +134,15 @@ export class Shader {
 
         let gl = this.gl;
 
-        gl.uniform2f(this.unif.texPos, x, y);
-        gl.uniform2f(this.unif.texSize, w, h);
+        gl.uniform2f(this.unif["texPos"], x, y);
+        gl.uniform2f(this.unif["texSize"], w, h);
     }
 
 
     setColor(r, g, b, a) {
 
         let gl = this.gl;
-        gl.uniform4f(this.unif.color, r, g, b, a);
+        gl.uniform4f(this.unif["color"], r, g, b, a);
     }
 
 
@@ -150,7 +150,7 @@ export class Shader {
 
         let gl = this.gl;
 
-        gl.uniformMatrix4fv(this.unif.transform, 
+        gl.uniformMatrix4fv(this.unif["transform"], 
             false, mat.transpose().m);
     }
 
@@ -159,7 +159,7 @@ export class Shader {
 
         let gl = this.gl;
 
-        gl.uniformMatrix4fv(this.unif.rotation, 
+        gl.uniformMatrix4fv(this.unif["rotation"], 
             false, mat.transpose().m);
     }
 
@@ -168,8 +168,8 @@ export class Shader {
 
         let gl = this.gl;
     
-        gl.uniform4f(this.unif.fogColor, r, g, b, 1.0);
-        gl.uniform1f(this.unif.fogDensity, d);
+        gl.uniform4f(this.unif["fogColor"], r, g, b, 1.0);
+        gl.uniform1f(this.unif["fogDensity"], d);
     }
 
 
@@ -177,7 +177,7 @@ export class Shader {
 
         let gl = this.gl;
     
-        gl.uniform3f(this.unif.lightDir, x, y, z);
-        gl.uniform1f(this.unif.lightMag, mag);
+        gl.uniform3f(this.unif["lightDir"], x, y, z);
+        gl.uniform1f(this.unif["lightMag"], mag);
     }
 }

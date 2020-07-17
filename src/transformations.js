@@ -94,7 +94,7 @@ export class Transformations {
 
     setPerspective(fovY, ratio, near, far) {
 
-        this.projection = Matrix3.perspective(
+        this.projection = Matrix4.perspective(
             fovY / 180.0 * Math.PI, 
             ratio, near, far
         );
@@ -132,14 +132,14 @@ export class Transformations {
     }
 
 
-    useTransform() {
+    use(activeShader) {
 
-        if (this.activeShader == null)
+        if (activeShader == null)
             return;
 
         this.computeProduct();
 
-        this.activeShader.setTransformMatrix(this.product);
-        this.activeShader.setRotationMatrix(this.rotation);
+        activeShader.setTransformMatrix(this.product);
+        activeShader.setRotationMatrix(this.rotation);
     }
 }

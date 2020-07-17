@@ -1,3 +1,4 @@
+import { Shader } from "./shader.js";
 
 
 const FRAG_FUNCTIONS = 
@@ -24,7 +25,7 @@ vec3 rgb222(vec3 v) {
 
 const VERTEX_SOURCE = {
 
-noTextureLight : 
+"noTextureLight" : 
 
 `attribute vec3 vertexPos;
 attribute vec2 vertexUV;
@@ -54,7 +55,7 @@ void main() {
 }`,
 
 
-texturedNoLight : 
+"texturedNoLight" : 
 
 `attribute vec3 vertexPos;
 attribute vec2 vertexUV;
@@ -82,7 +83,7 @@ void main() {
 }`,
 
 
-noTexture :
+"noTexture" :
 
 `attribute vec3 vertexPos;
 attribute vec2 vertexUV;
@@ -92,6 +93,9 @@ attribute vec3 vertexColor;
 uniform mat4 transform;
 uniform vec3 pos;
 uniform vec3 size;
+uniform vec4 color;
+
+varying vec4 faceColor;
    
 void main() {
     vec3 p = vertexPos * size + pos;
@@ -105,7 +109,7 @@ void main() {
 
 const FRAGMENT_SOURCE = {
 
-fogAndLightNoTexture :
+"fogAndLightNoTexture" :
 
 `precision mediump float;
  
@@ -132,7 +136,7 @@ void main() {
 }`,
 
 
-lightNoTexture :
+"lightNoTexture" :
 
 `precision mediump float;
  
@@ -152,7 +156,7 @@ void main() {
 
 
 
-fogNoTexture :
+"fogNoTexture" :
 
 `precision mediump float;
  
@@ -178,7 +182,7 @@ void main() {
 }`,
 
 
-textured : 
+"textured" : 
 
 `precision mediump float;
  
@@ -206,7 +210,7 @@ void main() {
 }`,
 
 
-noTexture :
+"noTexture" :
 
 `precision mediump float;
 

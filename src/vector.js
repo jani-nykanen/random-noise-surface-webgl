@@ -20,7 +20,7 @@ export class Vector3 {
 		
 		const EPS = 0.0001;
 		
-		let l = this.length;
+		let l = this.length();
 		if (l < EPS) {
 			
 			this.x = forceUnit ? 1 : 0;
@@ -46,9 +46,9 @@ export class Vector3 {
 		
 		if (typeof(x) == "object") {
 			
-			this.x += arg1.x;
-            this.y += arg1.y;
-            this.z += arg1.z;
+			this.x += x.x;
+            this.y += x.y;
+            this.z += x.z;
 		}
 		else  {
 			
@@ -136,11 +136,10 @@ export class Matrix4 {
 
     multiplyVector3(v) {
 		
-		return new Vector4(
-			A.m[0]  * v.x + A.m[1]  * v.y + A.m[2]  * v.z + A.m[3],
-			A.m[4]  * v.x + A.m[5]  * v.y + A.m[6]  * v.z + A.m[7],
-			A.m[8]  * v.x + A.m[9]  * v.y + A.m[10] * v.z + A.m[11],
-			A.m[12] * v.x + A.m[13] * v.y + A.m[14] * v.z + A.m[15]
+		return new Vector3(
+			this.m[0]  * v.x + this.m[1]  * v.y + this.m[2]  * v.z + this.m[3],
+			this.m[4]  * v.x + this.m[5]  * v.y + this.m[6]  * v.z + this.m[7],
+			this.m[8]  * v.x + this.m[9]  * v.y + this.m[10] * v.z + this.m[11]
 		);
 	}
     

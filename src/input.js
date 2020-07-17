@@ -28,9 +28,9 @@ export class InputManager {
 
     constructor() {
 
-        this.keyStates = new Array();
-        this.prevent = new Array();
-        this.actions = new Array();
+        this.keyStates = {};
+        this.prevent = {};
+        this.actions = {};
 
         this.anyPressed = false;
 
