@@ -1,3 +1,4 @@
+import { Mesh } from "./mesh";
 
 
 export class Canvas {
@@ -23,6 +24,44 @@ export class Canvas {
 
         this.boundMesh = null;
         this.boundTexture = null;
+
+        this.mRect = this.createRectangleMesh();
+    }
+
+
+    createRectangleMesh() {
+
+        return new Mesh(
+            this.gl,
+            [
+             0, 0, 0,
+             1, 0, 0,
+             1, 1, 0,
+             0, 1, 0
+            ],
+            [
+             0, 0,
+             1, 0,
+             1, 1,
+             0, 1
+            ],
+            [
+             0, 0, -1,
+             0, 0, -1,
+             0, 0, -1,
+             0, 0, -1
+            ],
+            [
+             1, 1, 1,
+             1, 1, 1,
+             1, 1, 1,
+             1, 1, 1
+            ]
+            [
+             0, 1, 2, 
+             2, 3, 0
+            ],
+        );
     }
 
 
@@ -65,6 +104,7 @@ export class Canvas {
         gl.enableVertexAttribArray(0);
         gl.enableVertexAttribArray(1);
         gl.enableVertexAttribArray(2);
+        gl.enableVertexAttribArray(3);
 
         gl.viewport(0, 0, this.width, this.height);
     }

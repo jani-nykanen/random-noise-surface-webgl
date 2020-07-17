@@ -97,6 +97,7 @@ export class Shader {
         gl.bindAttribLocation(program, 0, "vertexPos");
         gl.bindAttribLocation(program, 1, "vertexUV");
         gl.bindAttribLocation(program, 2, "vertexNormal");
+        gl.bindAttribLocation(program, 3, "vertexColor");
     }
 
 
