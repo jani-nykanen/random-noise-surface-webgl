@@ -106,10 +106,12 @@ export class Player {
 
     positionCamera(c) {
 
+        const HEIGHT = 0.5;
+
         let dir = this.getDirectionalVector();
 
         c.transf.setView(
-            this.pos, 
+            Vector3.add(this.pos, new Vector3(0, -HEIGHT, 0)), 
             new Vector3(
                 this.pos.x + dir.x,
                 this.pos.y + dir.y,

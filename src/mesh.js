@@ -17,20 +17,29 @@ export class Mesh {
             new Float32Array(vertices),
             gl.STATIC_DRAW);
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, 
-                new Float32Array(uvs),
-                gl.STATIC_DRAW);
+        if (uvs != null) {
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.normalBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, 
-                new Float32Array(normals),
-                gl.STATIC_DRAW);   
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, 
+                    new Float32Array(uvs),
+                    gl.STATIC_DRAW);
+        }
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, 
-                new Float32Array(colors),
-                gl.STATIC_DRAW);  
+        if (normals != null) {
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.normalBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, 
+                    new Float32Array(normals),
+                    gl.STATIC_DRAW);   
+        }
+
+        if (colors != null) {
+            
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, 
+                    new Float32Array(colors),
+                    gl.STATIC_DRAW);  
+        }
                 
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, 

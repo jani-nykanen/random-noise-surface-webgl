@@ -233,7 +233,8 @@ export class Canvas {
 
     bindTexture(t) {
 
-        if (t != this.boundTexture) {
+        if (t != null &&
+            t != this.boundTexture) {
 
             this.boundTexture = t;
             t.bind(this.gl);

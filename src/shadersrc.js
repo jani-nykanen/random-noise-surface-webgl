@@ -50,7 +50,7 @@ void main() {
     gl_Position = o;
     
     vec3 rot = (rotation * vec4(vertexNormal,1)).xyz;
-    light = (1.0-lightMag) + lightMag * dot(rot, lightDir);
+    light = 1.0 - ((1.0-lightMag) + lightMag * dot(rot, lightDir));
 	
 	faceColor = color * vec4(vertexColor, 1.0);
 }`,

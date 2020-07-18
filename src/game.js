@@ -1,6 +1,7 @@
 import { Scene } from "./scene.js";
 import { Player } from "./player.js";
 import { Vector3 } from "./vector.js";
+import { Terrain, Heightmap } from "./terrain.js";
 
 
 export class GameScene extends Scene {
@@ -11,6 +12,8 @@ export class GameScene extends Scene {
         super(ev);
 
         this.player = new Player(new Vector3(0, 0, -2));
+        this.terrain = new Terrain( (new Heightmap(16, 16)).randomize(0.5), 
+            new Vector3(1, 1, 1));
     }
 
 
@@ -25,6 +28,8 @@ export class GameScene extends Scene {
         const FOV_Y = 70.0;
 
         c.clear(0.70, 0.70, 0.70);
+        c.setColor(1, 1, 1, 1);
+        c.resetCoordinateTransition();
 
         c.toggleTexturing(false);
         c.toggleDepthTest(true);
@@ -39,6 +44,8 @@ export class GameScene extends Scene {
             0.1, 100.0);
         this.player.positionCamera(c);
         c.useTransform();
+
+        this.terrain.draw(c);
 
         c.setColor(1, 0, 0, 1);
         c.fillRect(-0.5, -0.5, 1.0, 1.0);
