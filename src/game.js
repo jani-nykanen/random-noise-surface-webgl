@@ -11,8 +11,9 @@ export class GameScene extends Scene {
 
         super(ev);
 
-        this.player = new Player(new Vector3(0, 0, -2));
-        this.terrain = new Terrain( (new Heightmap(32, 32)).testWaves(0.5), 
+        this.player = new Player(new Vector3(0.0001, 0.0, 0.0001));
+        this.terrain = new Terrain(10.0,
+            (new Heightmap(32, 32)).testWaves(0.05), 
             new Vector3(0.75, 1, 0.5));
     }
 
@@ -20,6 +21,7 @@ export class GameScene extends Scene {
     refresh(ev) {
 
         this.player.update(ev);
+        this.terrain.playerCollision(this.player);
     }
 
 
@@ -36,8 +38,8 @@ export class GameScene extends Scene {
 
         c.toggleFogAndLighting(true, true);
 
-        c.setLighting(0.5, this.player.getDirectionalVector());
-        c.setFog(0.25, 0, 0, 0);
+        c.setLighting(1.0, this.player.getDirectionalVector());
+        c.setFog(0.20, 0, 0, 0);
 
         c.transf.loadIdentity();
         c.transf.setPerspective(FOV_Y, c.width/c.height,
@@ -46,9 +48,6 @@ export class GameScene extends Scene {
         c.useTransform();
 
         this.terrain.draw(c);
-
-        c.setColor(1, 0, 0, 1);
-        c.fillRect(-0.5, -0.5, 1.0, 1.0);
 
         c.toggle2DMode();
         c.toggleTexturing(true);

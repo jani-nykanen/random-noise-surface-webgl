@@ -107,6 +107,12 @@ export class Vector3 {
 			u.x * v.y - v.x * u.y
 		);
 	}
+
+
+	static dot(u, v) {
+
+		return u.x*v.x + u.y*v.y + u.z*v.z;
+	}
 }
 
 

@@ -8,4 +8,5 @@ if [ -f ../dist.zip ]; then
     rm ../dist.zip
 fi
 zip -r ../dist.zip index.html
+advzip -z ../dist.zip
 stat --printf="File size: %s bytes used out of 13,312 bytes.\n" ../dist.zip

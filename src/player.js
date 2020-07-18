@@ -1,6 +1,6 @@
 import { State } from "./input.js";
 import { Vector3 } from "./vector.js";
-import { updateSpeedAxis, clamp, negMod } from "./util.js";
+import { updateSpeedAxis, clamp, negMod, isInsideTriangle } from "./util.js";
 
 
 export class Player {
@@ -9,7 +9,6 @@ export class Player {
     constructor(pos) {
 
         this.pos = pos.clone();
-        this.startPos = pos.clone();
 
         this.angle = new Vector3(Math.PI/2.0, Math.PI/2.0, 0);
         this.angleTarget = new Vector3(0, 0, 0);
@@ -21,6 +20,8 @@ export class Player {
         this.friction = new Vector3(0.0033, 0.0033, 0.0033);
 
         this.radius = 0.225;
+        
+        this.height = 0.5;
     }
 
         
@@ -28,6 +29,9 @@ export class Player {
         
         const TURN_SPEED = 0.010;
         const MOVE_SPEED = 0.033;
+        const GRAVITY = 0.1;
+
+        this.target.y = GRAVITY;
 
         this.angle.y += -ev.input.mouseDelta.x * TURN_SPEED;
         this.angle.x += -ev.input.mouseDelta.y * TURN_SPEED;
@@ -106,12 +110,10 @@ export class Player {
 
     positionCamera(c) {
 
-        const HEIGHT = 0.5;
-
         let dir = this.getDirectionalVector();
 
         c.transf.setView(
-            Vector3.add(this.pos, new Vector3(0, -HEIGHT, 0)), 
+            Vector3.add(this.pos, new Vector3(0, -this.height, 0)), 
             new Vector3(
                 this.pos.x + dir.x,
                 this.pos.y + dir.y,
@@ -128,5 +130,38 @@ export class Player {
             Math.cos(this.angle.x),
             Math.sin(this.angle.x) * Math.sin(this.angle.y)
         );
+    }
+
+
+    planeCollision(A, B, C) {
+
+        const EPS = 0.0001;
+        const TOP_MARGIN = 0.1;
+
+        if(!isInsideTriangle(this.pos.x, this.pos.z,
+            A.x, A.z, B.x,B.z, C.x,C.z)) 
+            return false;
+    
+        let v1 = new Vector3(B.x-A.x, B.y-A.y, B.z-A.z);
+        let v2 = new Vector3(C.x-A.x, C.y-A.y, C.z-A.z);
+    
+        let n = Vector3.cross(v1, v2);
+        // If too steep
+        if(Math.abs(n.y) < EPS ) return false;
+        
+        n.normalize();
+   
+        // Check if below the plane
+        let cy = -(this.pos.x*n.x + this.pos.z*n.z - Vector3.dot(A, n)) / n.y;
+        if(this.pos.y > cy - TOP_MARGIN &&
+            this.speed.y > 0.0) {
+    
+            this.speed.y = 0.0;
+            this.pos.y = cy;
+
+            return true;
+        }
+
+        return false;
     }
 }

@@ -61,7 +61,7 @@ export class Heightmap {
 
 export class Terrain {
 
-    constructor(heightmap, color) {
+    constructor(scale, heightmap, color) {
 
         this.width = heightmap.width;
         this.depth = heightmap.height;
@@ -71,6 +71,7 @@ export class Terrain {
 
         this.mesh = null;
         this.color = color.clone();
+        this.scale = scale;
     }
 
 
@@ -181,7 +182,7 @@ export class Terrain {
 
                 colors.push(color.x, color.y, color.z);
 
-                uvs.push(x, y);
+                uvs.push(x * stepx, y * stepy);
             }
         }
         
@@ -290,7 +291,7 @@ export class Terrain {
 
         c.transf.push();
         
-        c.transf.scale(10, 1, 10);
+        c.transf.scale(this.scale, this.scale, this.scale);
         c.transf.translate(-0.5, 0, -0.5);
         c.useTransform();
 
@@ -298,5 +299,47 @@ export class Terrain {
 
         c.transf.pop();
         c.useTransform();
+    }
+
+
+    playerCollision(o) {
+
+        let stepx = this.scale / this.width;
+        let stepz = this.scale / this.depth;
+
+        let x = o.pos.x + this.scale/2;
+        let z = o.pos.z + this.scale/2;
+
+        let tx = Math.floor(x / stepx);
+        let tz = Math.floor(z / stepz);
+
+        if (tx < 0 || tz < 0 || tx >= this.width || tz >= this.depth)
+            return false;
+
+        let px = tx*stepx - this.scale/2;
+        let pz = tz*stepz - this.scale/2;
+
+        let topLeft = new Vector3(
+            px, 
+            this.hmap.getHeightValue(tx, tz) * this.scale, 
+            pz);
+
+        let topRight = new Vector3(
+            px + stepx, 
+            this.hmap.getHeightValue(tx+1, tz) * this.scale, 
+            pz);
+
+        let bottomRight = new Vector3(
+            px + stepx, 
+            this.hmap.getHeightValue(tx+1, tz+1) * this.scale, 
+            pz + stepz);
+
+        let bottomLeft = new Vector3(
+            px, 
+            this.hmap.getHeightValue(tx, tz+1) * this.scale, 
+            pz + stepz);
+
+        return o.planeCollision(topLeft, topRight, bottomRight) ||
+               o.planeCollision(bottomRight, bottomLeft, topLeft);
     }
 }
