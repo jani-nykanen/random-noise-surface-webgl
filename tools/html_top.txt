@@ -6,8 +6,5 @@
     <title>Game</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
-<body style="overflow: hidden; cursor: none; background-color: black; color: white">
-
-    <script type="module" src="out.js"></script>
-
-</body>
+<body style="overflow: hidden; background-color: black; color: white">
+<script>

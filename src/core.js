@@ -11,11 +11,13 @@ export class ApplicationCore {
         this.timeSum = 0;
         this.oldTime = 0;
 
+        this.canvas = new Canvas(canvasWidth, canvasHeight);
+
         this.ev = {
 
             step: 1,
 
-            input: new InputManager()
+            input: new InputManager(this.canvas)
                 .addAction("left", "ArrowLeft", "KeyA")
                 .addAction("up", "ArrowUp", "KeyW")
                 .addAction("right", "ArrowRight", "KeyD")
@@ -23,7 +25,6 @@ export class ApplicationCore {
                 .addAction("start", "Enter", null)
         };
 
-        this.canvas = new Canvas(canvasWidth, canvasHeight);
 
         this.activeScene = new Scene(this.ev);
     }
@@ -52,6 +53,7 @@ export class ApplicationCore {
 
             this.timeSum -= FRAME_WAIT;
         } 
+        this.ev.input.postUpdate();
 
         this.activeScene.redraw(this.canvas);
 

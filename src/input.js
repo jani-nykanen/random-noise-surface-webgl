@@ -1,3 +1,4 @@
+import { Vector3 } from "./vector.js";
 
 
 export const State = {
@@ -27,13 +28,17 @@ class Action {
 export class InputManager {
 
 
-    constructor() {
+    constructor(c) {
 
         this.keyStates = {};
         this.prevent = {};
         this.actions = {};
 
         this.anyPressed = false;
+
+        this.locked = false;
+
+        this.mouseDelta = new Vector3(0, 0, 0);
 
         window.addEventListener("keydown", 
             (e) => {
@@ -58,13 +63,25 @@ export class InputManager {
         // To get the focus when embedded to an iframe
         window.addEventListener("mousemove", (e) => {
 
-            window.focus();
+            if (!this.locked)
+                window.focus();
+            else {
+
+               this.mouseMove(e.movementX, e.movementY);
+            }
         });
         window.addEventListener("mousedown", (e) => {
 
-            window.focus();
+            if (!this.locked)
+                window.focus();
+
+            c.canvas.requestPointerLock();
         });
 
+        document.addEventListener("pointerlockchange", e => {
+
+            this.locked = document.pointerLockElement == c.canvas;
+        });
     }
 
 
@@ -78,6 +95,13 @@ export class InputManager {
         }
 
         return this;
+    }
+
+
+    mouseMove(dx, dy) {
+
+        this.mouseDelta.x = dx;
+        this.mouseDelta.y = dy;
     }
 
 
@@ -128,7 +152,13 @@ export class InputManager {
         }
 
         this.updateStateArray(this.keyStates);
+    }
 
+
+    postUpdate() {
+
+        this.mouseDelta.x = 0;
+        this.mouseDelta.y = 0;
     }
 
 
