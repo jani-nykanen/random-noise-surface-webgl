@@ -1,6 +1,6 @@
 import { Shader } from "./shader.js";
 
-
+/*
 const FRAG_FUNCTIONS = 
 `
 vec3 rgb222(vec3 v) {
@@ -21,7 +21,7 @@ vec3 rgb222(vec3 v) {
     
     return ret;
 }`
-
+*/
 
 const VERTEX_SOURCE = {
 
@@ -119,9 +119,7 @@ uniform float fogDensity;
 
 varying float light;
 varying vec4 faceColor;
-`
-+ FRAG_FUNCTIONS +
-`
+
 void main() {
 
     vec4 a = gl_FragCoord;
@@ -130,7 +128,7 @@ void main() {
     float fog = 1.0 / exp(d*d);
     fog = clamp(fog, 0.0, 1.0);
     gl_FragColor = vec4(
-        rgb222((1.0-light)*(fog*faceColor.xyz + (1.0-fog)*fogColor.xyz)), 
+        (1.0-light)*(fog*faceColor.xyz + (1.0-fog)*fogColor.xyz), 
         faceColor.a);
 		
 }`,
@@ -146,12 +144,10 @@ uniform float fogDensity;
 
 varying float light;
 varying vec4 faceColor;
-`
-+ FRAG_FUNCTIONS +
-`
+
 void main() {
 
-    gl_FragColor = vec4(rgb222((1.0-light)*faceColor.xyz), faceColor.a);
+    gl_FragColor = vec4((1.0-light)*faceColor.xyz, faceColor.a);
 }`,
 
 
@@ -166,9 +162,6 @@ uniform float fogDensity;
 
 varying vec4 faceColor;
 
-`
-+ FRAG_FUNCTIONS +
-`
 void main() {
 
     vec4 a = gl_FragCoord;
@@ -177,7 +170,7 @@ void main() {
     float fog = 1.0 / exp(d*d);
     fog = clamp(fog, 0.0, 1.0);
     gl_FragColor = vec4(
-        rgb222(fog*faceColor.xyz + (1.0-fog)*fogColor.xyz), 
+        fog*faceColor.xyz + (1.0-fog)*fogColor.xyz, 
         faceColor.a);
 }`,
 
@@ -193,9 +186,7 @@ uniform vec2 texSize;
 varying vec2 uv;
 varying float light;
 varying vec4 faceColor;
-`
-+ FRAG_FUNCTIONS +
-`
+
 void main() {
     const float DELTA = 0.001;
     vec2 tex = uv;    
@@ -206,7 +197,7 @@ void main() {
     if(res.a <= DELTA) {
         discard;
     }
-    gl_FragColor = vec4(rgb222(res.xyz), res.a);
+    gl_FragColor = res;
 }`,
 
 
@@ -215,11 +206,9 @@ void main() {
 `precision mediump float;
 
 varying vec4 faceColor;
-`
-+ FRAG_FUNCTIONS +
-`
+
 void main() {
-    gl_FragColor = vec4(rgb222(faceColor.rgb), faceColor.a);
+    gl_FragColor = faceColor;
 }`
 
 };

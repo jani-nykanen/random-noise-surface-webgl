@@ -84,7 +84,7 @@ export class Vector3 {
 	static multiply(v, scalar) {
 		
 		let out = v.clone();
-		v.multiply(scalar);
+		out.multiply(scalar);
 		
 		return out;
 	}
@@ -93,9 +93,19 @@ export class Vector3 {
 	static add(v, x, y, z) {
 		
 		let out = v.clone();
-		v.add(x, y, z);
+		out.add(x, y, z);
 		
 		return out;
+	}
+
+
+	static cross(u, v) {
+
+		return new Vector3(
+			u.y * v.z - v.y * u.z,
+			-(u.x * v.z - v.x * u.z),
+			u.x * v.y - v.x * u.y
+		);
 	}
 }
 
@@ -247,13 +257,12 @@ export class Matrix4 {
 		
 		let A = Matrix4.identity();
 		
-		let forward = 
-			eye.add(
-				new Vector3(-target.x, -target.y, -target.z)
-			).normalize();
+		let forward = Vector3.normalize( 
+			Vector3.add(eye, new Vector3(-target.x, -target.y, -target.z))
+		);
 			
-		let left = forward.cross(upDir).normalize();
-		let up = forward.cross(left);
+		let left = Vector3.normalize(Vector3.cross(forward, upDir));
+		let up = Vector3.cross(forward, left);
 
 		A.m[0] = left.x; A.m[1] = left.y; A.m[2] = left.z;
 		A.m[4] = up.x; A.m[5] = up.y; A.m[6] = up.z;

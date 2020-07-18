@@ -32,6 +32,7 @@ export function generateFontTexture(gl, type, size, offset, bold, alphaLimit) {
     }
 
     // Make the image "monochrome" (only white and alpha)
+    /*
     let imageData = ctx.getImageData(0, 0, w, h);
     let data = imageData.data;
     for (let i = 0; i < data.length/4; ++ i) {
@@ -43,6 +44,7 @@ export function generateFontTexture(gl, type, size, offset, bold, alphaLimit) {
     }
 
     ctx.putImageData(imageData, 0, 0);
+    */
 
     return new Texture(gl, cv);
 }

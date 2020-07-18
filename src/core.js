@@ -16,11 +16,11 @@ export class ApplicationCore {
             step: 1,
 
             input: new InputManager()
-                .addAction("left", "ArrowLeft")
-                .addAction("up", "ArrowUp")
-                .addAction("right", "ArrowRight")
-                .addAction("down", "ArrowDown")
-                .addAction("start", "Enter")
+                .addAction("left", "ArrowLeft", "KeyA")
+                .addAction("up", "ArrowUp", "KeyW")
+                .addAction("right", "ArrowRight", "KeyD")
+                .addAction("down", "ArrowDown", "KeyS")
+                .addAction("start", "Enter", null)
         };
 
         this.canvas = new Canvas(canvasWidth, canvasHeight);

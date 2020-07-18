@@ -63,7 +63,7 @@ export class Canvas {
         this.transf = new Transformations();
 
         this.fontDefault = generateFontTexture(this.gl,
-            "Arial", 12, 16, true, 100);
+            "Arial", 24, 32, true, 100);
 
         window.addEventListener("resize", 
             () => this.resize(window.innerWidth, window.innerHeight));
@@ -113,6 +113,11 @@ export class Canvas {
             "position: absolute; top: 0; left: 0; z-index: -1;");
 
         this.canvas = document.createElement("canvas");
+
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+
+        /*
         this.canvas.width = w;
         this.canvas.height = h;
 
@@ -128,6 +133,12 @@ export class Canvas {
 
         this.gl = this.canvas.getContext("webgl", 
             {alpha:false, antialias: false});
+            */
+        cdiv.appendChild(this.canvas);
+        document.body.appendChild(cdiv);
+
+        this.gl = this.canvas.getContext("webgl", 
+            {alpha:false, antialias: true});
     }
 
 
@@ -167,7 +178,7 @@ export class Canvas {
 
 
     resize(w, h) {
-
+/*
         let c = this.canvas;
         let x, y;
         let width, height;
@@ -190,6 +201,14 @@ export class Canvas {
         c.style.width = String(width | 0) + "px";
         c.style.top = top;
         c.style.left = left;
+        */
+
+        this.canvas.width = w;
+        this.canvas.height = h;
+        this.gl.viewport(0, 0, w, h);
+
+        this.width = w;
+        this.height = h;
     }
 
 
