@@ -49,8 +49,8 @@ void main() {
     vec4 o = transform * vec4(p, 1);
     gl_Position = o;
     
-    vec3 rot = (rotation * vec4(vertexNormal,1)).xyz;
-    light = 1.0 - ((1.0-lightMag) + lightMag * dot(rot, lightDir));
+    vec3 rot = normalize((rotation * vec4(vertexNormal,1)).xyz);
+    light = lightMag * 0.5 * (1.0+dot(rot, lightDir));
 	
 	faceColor = color * vec4(vertexColor, 1.0);
 }`,
@@ -129,7 +129,7 @@ void main() {
     float fog = 1.0 / exp(d*d);
     fog = clamp(fog, 0.0, 1.0);
     gl_FragColor = vec4(
-        light*(fog*faceColor.xyz + (1.0-fog)*fogColor.xyz), 
+        (1.0-light)*(fog*faceColor.xyz + (1.0-fog)*fogColor.xyz), 
         faceColor.a);
 		
 }`,
@@ -148,7 +148,7 @@ varying vec4 faceColor;
 
 void main() {
 
-    gl_FragColor = vec4(light*faceColor.xyz, faceColor.a);
+    gl_FragColor = vec4((1.0-light)*faceColor.xyz, faceColor.a);
 }`,
 
 

@@ -25,6 +25,22 @@ export class Heightmap {
 
         return this;
     }
+    testWaves(h) {
+
+        let v;
+        for (let y = 0; y < this.height; ++ y) {
+
+            for (let x = 0; x < this.width; ++ x) {
+
+                v = 0.5 * (Math.cos(x/this.width * Math.PI*4) +
+                    Math.sin(y/this.height * Math.PI*4)) * h;
+
+                this.data[y * this.width + x] = v;
+            }
+        }
+
+        return this;
+    }
 
 
     getHeightValue(x, y) {
@@ -56,6 +72,88 @@ export class Terrain {
         this.mesh = null;
         this.color = color.clone();
     }
+
+
+    /*
+    generateMeshAlternative(gl, color) {
+
+        let sx = 1.0 / this.width;
+        let sy = 1.0 / this.depth;
+
+        let vertices = new Array();
+        let uvs = new Array();
+        let normals = new Array();
+        let colors = new Array();
+        let indices = new Array();
+
+        let A = new Vector3(0, 0, 0);
+        let B = new Vector3(0, 0, 0);
+        let C = new Vector3(0, 0, 0);
+        let D = new Vector3(0, 0, 0);
+        let n = new Vector3(0, 0, 0);
+        for (let y = 0; y < this.depth-1; ++ y) {
+
+            for (let x = 0; x < this.width-1; ++ x) {
+
+                A = new Vector3(sx * x,
+                    this.hmap.getHeightValue(x, y), sy * y);
+                B = new Vector3(sx * (x+1),
+                    this.hmap.getHeightValue(x+1, y), sy * y);
+                C = new Vector3(sx * (x+1),
+                    this.hmap.getHeightValue(x+1, y+1), sy * (y+1));    
+                D = new Vector3(sx * x,
+                    this.hmap.getHeightValue(x, y+1), sy * (y+1));   
+
+                vertices.push(A.x, A.y, A.z);
+                vertices.push(B.x, B.y, B.z);
+                vertices.push(C.x, C.y, C.z);
+
+                vertices.push(C.x, C.y, C.z);
+                vertices.push(D.x, D.y, D.z);
+                vertices.push(A.x, A.y, A.z);
+
+                uvs.push(A.x, A.z);
+                uvs.push(B.x, B.z);
+                uvs.push(C.x, C.z);
+
+                uvs.push(C.x, C.z);
+                uvs.push(D.x, D.z);
+                uvs.push(A.x, A.z);
+
+                n = Vector3.cross(
+                    Vector3.add(B, Vector3.multiply(A, -1)),
+                    Vector3.add(C, Vector3.multiply(A, -1))
+                );
+                n.normalize();
+
+                for (let i = 0; i < 3; ++ i) {
+
+                    normals.push(n.x, n.y, n.z);
+                }
+
+                n = Vector3.cross(
+                    Vector3.add(B, Vector3.multiply(D, -1)),
+                    Vector3.add(C, Vector3.multiply(D, -1))
+                );
+                n.normalize();
+
+                for (let i = 0; i < 3; ++ i) {
+
+                    normals.push(n.x, n.y, n.z);
+                }
+            }
+        }
+
+        for (let i = 0; i < vertices.length/3; ++ i) {
+
+            colors.push(color.x, color.y, color.z);
+            indices.push(indices.length);
+        }
+
+        return new Mesh(gl, 
+            vertices, uvs, normals, colors, indices);
+    }
+    */
 
 
     generateMesh(gl, color) {
@@ -152,14 +250,11 @@ export class Terrain {
         let i = y*this.width + x;
         let j = y*this.width + x + 1;
         let k = (y+1)*this.width + x + 1;
-        let l = (y+1)*this.width + x;
+        // let l = (y+1)*this.width + x;
 
-        // TODO: This is from an old project, might be 
-        // a good idea to refactor a things or two...
-
-        // Compute two different normals and
-        // take their mean, which is a sufficient
-        // approximation for the surface normals
+        // TODO: We approximate two surface
+        // normals with just the other normal.
+        // There is something fishy in it...
 
         let ox = data[i*3];
         let oy = data[i*3 + 1];
@@ -172,6 +267,7 @@ export class Terrain {
                 data[j*3 + 2] - oz
         ), false);
 
+        // TODO: What if k == l ?
         let v2 = Vector3.normalize(
             new Vector3(
                 data[k*3] - ox, 
@@ -179,36 +275,10 @@ export class Terrain {
                 data[k*3 + 2] - oz
         ), false);
 
-        ox = data[l*3];
-        oy = data[l*3 + 1];
-        oz = data[l*3 + 2];
+        return  Vector3.cross(v1, v2);
 
-        let v3 = Vector3.normalize(
-            new Vector3(
-                data[j*3] - ox, 
-                data[j*3 + 1] - oy, 
-                data[j*3 + 2] - oz
-        ), false);
-
-        let v4 = Vector3.normalize(
-            new Vector3(
-                data[k*3] - ox, 
-                data[k*3 + 1] - oy, 
-                data[k*3 + 2] - oz
-        ), false);
-        v4.normalize();
-
-        let n1 = Vector3.cross(v1, v2);
-        let n2 = Vector3.cross(v3, v4);
-
-        // Compute the mean vector. We can safely
-        // assume that this is not 0
-        // TODO: Oh dear god no
-        return Vector3.normalize(new Vector3(
-            -0.5 * (n1.x+n2.y),
-            -0.5 * (n1.x+n2.y),
-            -0.5 * (n1.x+n2.y)));
     }
+
 
 
     draw(c) {

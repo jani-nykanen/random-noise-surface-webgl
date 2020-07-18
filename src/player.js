@@ -62,7 +62,7 @@ export class Player {
 
     move(ev) {
 
-        const ANGLE_LIMIT = Math.PI/4;
+        const ANGLE_LIMIT = Math.PI/3;
 
         this.speed.x = updateSpeedAxis(this.speed.x, 
             this.target.x, this.friction.x * ev.step);

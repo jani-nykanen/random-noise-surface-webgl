@@ -12,8 +12,8 @@ export class GameScene extends Scene {
         super(ev);
 
         this.player = new Player(new Vector3(0, 0, -2));
-        this.terrain = new Terrain( (new Heightmap(16, 16)).randomize(0.5), 
-            new Vector3(1, 1, 1));
+        this.terrain = new Terrain( (new Heightmap(32, 32)).testWaves(0.5), 
+            new Vector3(0.75, 1, 0.5));
     }
 
 
@@ -27,7 +27,7 @@ export class GameScene extends Scene {
 
         const FOV_Y = 70.0;
 
-        c.clear(0.70, 0.70, 0.70);
+        c.clear(0.0, 0.0, 0.0);
         c.setColor(1, 1, 1, 1);
         c.resetCoordinateTransition();
 
@@ -36,7 +36,7 @@ export class GameScene extends Scene {
 
         c.toggleFogAndLighting(true, true);
 
-        c.setLighting(1.0, this.player.getDirectionalVector());
+        c.setLighting(0.5, this.player.getDirectionalVector());
         c.setFog(0.25, 0, 0, 0);
 
         c.transf.loadIdentity();
