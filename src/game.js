@@ -29,8 +29,9 @@ export class GameScene extends Scene {
         c.toggleTexturing(false);
         c.toggleDepthTest(true);
 
-        c.toggleFogAndLighting(true, false);
+        c.toggleFogAndLighting(true, true);
 
+        c.setLighting(1.0, this.player.getDirectionalVector());
         c.setFog(0.25, 0, 0, 0);
 
         c.transf.loadIdentity();

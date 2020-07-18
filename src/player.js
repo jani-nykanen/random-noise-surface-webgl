@@ -14,7 +14,7 @@ export class Player {
         this.angle = new Vector3(Math.PI/2.0, Math.PI/2.0, 0);
         this.angleTarget = new Vector3(0, 0, 0);
         this.angleSpeed = this.angleTarget.clone();
-        this.angleFriction = new Vector3(0.02, 0.02, 0.02);
+        this.angleFriction = new Vector3(0.025, 0.025, 0.025);
 
         this.speed = new Vector3();
         this.target = this.speed.clone();
@@ -26,12 +26,12 @@ export class Player {
         
     control(ev) {   
         
-        const TURN_SPEED = 0.025;
+        const TURN_SPEED = 0.010;
         const MOVE_SPEED = 0.033;
 
-        this.angleTarget.y = -ev.input.mouseDelta.x * TURN_SPEED;
-        this.angleTarget.x = -ev.input.mouseDelta.y * TURN_SPEED;
-
+        this.angle.y += -ev.input.mouseDelta.x * TURN_SPEED;
+        this.angle.x += -ev.input.mouseDelta.y * TURN_SPEED;
+        
         let dir = new Vector3(0, 0, 0);
         if (ev.input.actions["up"].state & State.DownOrPressed) {
 
@@ -65,22 +65,22 @@ export class Player {
         const ANGLE_LIMIT = Math.PI/4;
 
         this.speed.x = updateSpeedAxis(this.speed.x, 
-            this.target.x, this.friction.x);
+            this.target.x, this.friction.x * ev.step);
         this.speed.y = updateSpeedAxis(this.speed.y, 
-            this.target.y, this.friction.y);
+            this.target.y, this.friction.y * ev.step);
         this.speed.z = updateSpeedAxis(this.speed.z, 
-            this.target.z, this.friction.z);
+            this.target.z, this.friction.z * ev.step);
 
         this.pos.x += this.speed.x * ev.step;
         this.pos.y += this.speed.y * ev.step;
         this.pos.z += this.speed.z * ev.step;
 
         this.angleSpeed.x = updateSpeedAxis(this.angleSpeed.x, 
-            this.angleTarget.x, this.angleFriction.x);
+            this.angleTarget.x, this.angleFriction.x * ev.step);
         this.angleSpeed.y = updateSpeedAxis(this.angleSpeed.y, 
-            this.angleTarget.y, this.angleFriction.y);
+            this.angleTarget.y, this.angleFriction.y * ev.step);
         this.angleSpeed.z = updateSpeedAxis(this.angleSpeed.z, 
-            this.angleTarget.z, this.angleFriction.z);
+            this.angleTarget.z, this.angleFriction.z * ev.step);
 
         this.angle.x += this.angleSpeed.x * ev.step;
         this.angle.y += this.angleSpeed.y * ev.step;

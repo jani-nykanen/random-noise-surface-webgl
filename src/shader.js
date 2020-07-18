@@ -173,7 +173,7 @@ export class Shader {
     }
 
 
-    setLighting(mag, x, y, z) {
+    setLight(mag, x, y, z) {
 
         let gl = this.gl;
     

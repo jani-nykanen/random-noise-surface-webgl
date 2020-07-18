@@ -100,8 +100,8 @@ export class InputManager {
 
     mouseMove(dx, dy) {
 
-        this.mouseDelta.x = dx;
-        this.mouseDelta.y = dy;
+        this.mouseDelta.x += dx;
+        this.mouseDelta.y += dy;
     }
 
 

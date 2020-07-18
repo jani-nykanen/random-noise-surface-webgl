@@ -223,7 +223,7 @@ export class Matrix4 {
 		let cc = Math.cos(angle*v.z);
 		let sc = Math.sin(angle*v.z);
 		
-		let A = new Matrix4();
+		let A = Matrix4.identity();
 
 		A.m[0] = cb * cc; 
 		A.m[1] = -cb * sc; 

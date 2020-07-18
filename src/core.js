@@ -33,7 +33,7 @@ export class ApplicationCore {
     loop(ts) {
 
         const MAX_REFRESH_COUNT = 5;
-        const FRAME_WAIT = 16.66667;
+        const FRAME_WAIT = 16.66667 * this.ev.step;
 
         this.timeSum += ts - this.oldTime;
         this.timeSum = Math.min(MAX_REFRESH_COUNT * FRAME_WAIT, this.timeSum);
@@ -41,6 +41,7 @@ export class ApplicationCore {
 
         let refreshCount = (this.timeSum / FRAME_WAIT) | 0;
         let firstFrame = true;
+
         while ((refreshCount --) > 0) {
 
             this.activeScene.refresh(this.ev);

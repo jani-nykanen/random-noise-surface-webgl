@@ -23,6 +23,7 @@ vec3 rgb222(vec3 v) {
 }`
 */
 
+// TODO: Rename some of these
 const VERTEX_SOURCE = {
 
 "noTextureLight" : 
@@ -128,7 +129,7 @@ void main() {
     float fog = 1.0 / exp(d*d);
     fog = clamp(fog, 0.0, 1.0);
     gl_FragColor = vec4(
-        (1.0-light)*(fog*faceColor.xyz + (1.0-fog)*fogColor.xyz), 
+        light*(fog*faceColor.xyz + (1.0-fog)*fogColor.xyz), 
         faceColor.a);
 		
 }`,
@@ -147,7 +148,7 @@ varying vec4 faceColor;
 
 void main() {
 
-    gl_FragColor = vec4((1.0-light)*faceColor.xyz, faceColor.a);
+    gl_FragColor = vec4(light*faceColor.xyz, faceColor.a);
 }`,
 
 
