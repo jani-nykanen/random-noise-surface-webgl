@@ -3,44 +3,6 @@ import { Mesh } from "./mesh.js";
 import { negMod, clamp } from "./util.js";
 
 
-export class TerrainGenerator {
-
-    constructor(width, depth, quality) {
-
-        this.genX = new Array(width*quality);
-        this.genZ = new Array(depth*quality);
-
-        this.width = width * quality;
-        this.depth = depth * quality;
-
-        this.quality = quality;
-    }
-
-
-    genTestSurface(height) {
-
-        let latitude = (Math.PI*4) / this.quality;
-        for (let x = 0; x < this.width; ++ x) {
-
-            this.genX[x] = height * (Math.cos(x * latitude ));
-            
-        }
-        for (let z = 0; z < this.depth; ++ z) {
-
-            this.genZ[z] = height * (Math.sin(z * latitude));
-        }
-
-        return this;
-    }
-
-
-    getHeightValue(x, z) {
-
-        return 0.5 * (this.genX[negMod(x, this.width)] + this.genZ[negMod(z, this.depth)]);
-    }
-}
-
-
 export class Heightmap {
 
     constructor(w, h) {
@@ -68,15 +30,36 @@ export class Heightmap {
     }
 
 
-    static generate(generator, startX, startZ) {
-        
-        let hmap = new Heightmap(generator.quality, generator.quality);
-        for (let z = startZ; z < startZ+hmap.height; ++ z) {
+    static testSurfaceWaves(height, width, depth, latitude) {
 
-            for (let x = startX; x < startX+hmap.width; ++ x) {
+        let hmap = new Heightmap(width, depth);
 
-                hmap.data[z*hmap.width+x] = generator.getHeightValue(x, z);
+        latitude = (latitude * Math.PI*2) / Math.max(width, depth);
+        for (let y = 0; y < depth; ++ y) {
+
+            for (let x = 0; x < width; ++ x) {
+
+                hmap.data[y*width + x] = height * 
+                    0.5 * (
+                        Math.cos(x * latitude) + 
+                        Math.sin(y * latitude)
+                    );
             }
+
+        }
+
+        return hmap;
+    }
+
+
+    static fromNoise(noise, width, depth, height) {
+
+        let hmap = new Heightmap(width, depth);
+
+        hmap.data = Array.from(noise);
+        for (let i = 0; i < hmap.data.length; ++ i) {
+
+            hmap.data[i] *= height;
         }
 
         return hmap;
@@ -86,12 +69,12 @@ export class Heightmap {
 
 export class Terrain {
 
-    constructor(scale, terrainGen, color) {
+    constructor(scale, heightmap, color) {
 
-        this.width = terrainGen.quality;
-        this.depth = terrainGen.quality;
+        this.width = heightmap.width;
+        this.depth = heightmap.height;
 
-        this.hmap = Heightmap.generate(terrainGen, 0, 0);
+        this.hmap = heightmap.clone();
 
         this.mesh = null;
         this.color = color.clone();

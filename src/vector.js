@@ -1,4 +1,106 @@
 
+export class Vector2 {
+
+
+	constructor(x, y) {
+		
+		this.x = x == undefined ? 0 : x;
+        this.y = y == undefined ? 0 : y;
+	}
+	
+	
+	length() {
+		
+		return Math.hypot(this.x, this.y);
+	}
+	
+	
+	normalize(forceUnit) {
+		
+		const EPS = 0.0001;
+		
+		let l = this.length();
+		if (l < EPS) {
+			
+			this.x = forceUnit ? 1 : 0;
+            this.y = 0;
+
+			return;
+		}
+		
+		this.x /= l;
+        this.y /= l;
+	}
+	
+	
+	clone() {
+		
+		return new Vector2(this.x, this.y);
+	}
+	
+	
+	add(x, y, z) {
+		
+		if (typeof(x) == "object") {
+			
+			this.x += x.x;
+            this.y += x.y;
+		}
+		else  {
+			
+			this.x += x;
+            this.y += y;
+		}
+	}
+	
+	
+	multiply(scalar) {
+		
+		this.x *= scalar;
+        this.y *= scalar;
+	}
+	
+	
+	//
+	// In the case the user does not want to
+	// modify the values of the original vector
+	//
+	
+	static normalize(v, forceUnit) {
+		
+		let out = v.clone();
+		out.normalize(forceUnit);
+		
+		return out;
+	}
+	
+	
+	static multiply(v, scalar) {
+		
+		let out = v.clone();
+		out.multiply(scalar);
+		
+		return out;
+	}
+	
+	
+	static add(v, x, y) {
+		
+		let out = v.clone();
+		out.add(x, y);
+		
+		return out;
+	}
+
+
+	static dot(u, v) {
+
+		return u.x*v.x + u.y*v.y;
+	}
+}
+
+
+
 export class Vector3 {
 
 

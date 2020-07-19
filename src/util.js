@@ -74,3 +74,8 @@ export function interpolateVectorTransition(v, t, div, step) {
 
     v.normalize();
 }
+
+export function lerp(a, b, w) {
+    
+    return (1.0 - w) * a + w * b;
+}

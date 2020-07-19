@@ -1,7 +1,8 @@
 import { Scene } from "./scene.js";
 import { Player } from "./player.js";
 import { Vector3 } from "./vector.js";
-import { Terrain, Heightmap, TerrainGenerator } from "./terrain.js";
+import { Terrain, Heightmap } from "./terrain.js";
+import { perlinNoise } from "./noise.js";
 
 
 export class GameScene extends Scene {
@@ -12,8 +13,9 @@ export class GameScene extends Scene {
         super(ev);
 
         this.player = new Player(new Vector3(0.0001, 0.0, 0.0001));
-        this.terrain = new Terrain(10.0,
-            (new TerrainGenerator(8, 8, 32)).genTestSurface(0.05), 
+        this.terrain = new Terrain(40.0,
+            Heightmap.fromNoise(perlinNoise(128, 128, 8, (new Date()).getTime() | 0, 256), 
+            128, 128, 0.04), 
             new Vector3(1.0, 1.5, 0.5));
     }
 
