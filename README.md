@@ -2,6 +2,10 @@
 
 ^ The title says it all.
 
+## Playing
+
+[Click here](https://jani-nykanen.github.io/perlin-noise-surface-webgl/dist/index.html)
+
 ## Building
 
 Too see how small the whole demo fits, run:
