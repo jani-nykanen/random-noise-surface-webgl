@@ -1,6 +1,44 @@
 import { Vector3 } from "./vector.js";
 import { Mesh } from "./mesh.js";
-import { negMod } from "./util.js";
+import { negMod, clamp } from "./util.js";
+
+
+export class TerrainGenerator {
+
+    constructor(width, depth, quality) {
+
+        this.genX = new Array(width*quality);
+        this.genZ = new Array(depth*quality);
+
+        this.width = width * quality;
+        this.depth = depth * quality;
+
+        this.quality = quality;
+    }
+
+
+    genTestSurface(height) {
+
+        let latitude = (Math.PI*4) / this.quality;
+        for (let x = 0; x < this.width; ++ x) {
+
+            this.genX[x] = height * (Math.cos(x * latitude ));
+            
+        }
+        for (let z = 0; z < this.depth; ++ z) {
+
+            this.genZ[z] = height * (Math.sin(z * latitude));
+        }
+
+        return this;
+    }
+
+
+    getHeightValue(x, z) {
+
+        return 0.5 * (this.genX[negMod(x, this.width)] + this.genZ[negMod(z, this.depth)]);
+    }
+}
 
 
 export class Heightmap {
@@ -12,34 +50,6 @@ export class Heightmap {
 
         this.width = w;
         this.height = h;
-    }
-
-
-    // For testing only
-    randomize(h) {
-
-        for (let i = 0; i < this.data.length; ++ i) {
-
-            this.data[i] = Math.random() * h;
-        }
-
-        return this;
-    }
-    testWaves(h) {
-
-        let v;
-        for (let y = 0; y < this.height; ++ y) {
-
-            for (let x = 0; x < this.width; ++ x) {
-
-                v = 0.5 * (Math.cos(x/this.width * Math.PI*4) +
-                    Math.sin(y/this.height * Math.PI*4)) * h;
-
-                this.data[y * this.width + x] = v;
-            }
-        }
-
-        return this;
     }
 
 
@@ -56,105 +66,37 @@ export class Heightmap {
 
         return out;
     }
+
+
+    static generate(generator, startX, startZ) {
+        
+        let hmap = new Heightmap(generator.quality, generator.quality);
+        for (let z = startZ; z < startZ+hmap.height; ++ z) {
+
+            for (let x = startX; x < startX+hmap.width; ++ x) {
+
+                hmap.data[z*hmap.width+x] = generator.getHeightValue(x, z);
+            }
+        }
+
+        return hmap;
+    }
 }
 
 
 export class Terrain {
 
-    constructor(scale, heightmap, color) {
+    constructor(scale, terrainGen, color) {
 
-        this.width = heightmap.width;
-        this.depth = heightmap.height;
-        // this.height = ... max height or something?
-        
-        this.hmap = heightmap.clone();
+        this.width = terrainGen.quality;
+        this.depth = terrainGen.quality;
+
+        this.hmap = Heightmap.generate(terrainGen, 0, 0);
 
         this.mesh = null;
         this.color = color.clone();
         this.scale = scale;
     }
-
-
-    /*
-    generateMeshAlternative(gl, color) {
-
-        let sx = 1.0 / this.width;
-        let sy = 1.0 / this.depth;
-
-        let vertices = new Array();
-        let uvs = new Array();
-        let normals = new Array();
-        let colors = new Array();
-        let indices = new Array();
-
-        let A = new Vector3(0, 0, 0);
-        let B = new Vector3(0, 0, 0);
-        let C = new Vector3(0, 0, 0);
-        let D = new Vector3(0, 0, 0);
-        let n = new Vector3(0, 0, 0);
-        for (let y = 0; y < this.depth-1; ++ y) {
-
-            for (let x = 0; x < this.width-1; ++ x) {
-
-                A = new Vector3(sx * x,
-                    this.hmap.getHeightValue(x, y), sy * y);
-                B = new Vector3(sx * (x+1),
-                    this.hmap.getHeightValue(x+1, y), sy * y);
-                C = new Vector3(sx * (x+1),
-                    this.hmap.getHeightValue(x+1, y+1), sy * (y+1));    
-                D = new Vector3(sx * x,
-                    this.hmap.getHeightValue(x, y+1), sy * (y+1));   
-
-                vertices.push(A.x, A.y, A.z);
-                vertices.push(B.x, B.y, B.z);
-                vertices.push(C.x, C.y, C.z);
-
-                vertices.push(C.x, C.y, C.z);
-                vertices.push(D.x, D.y, D.z);
-                vertices.push(A.x, A.y, A.z);
-
-                uvs.push(A.x, A.z);
-                uvs.push(B.x, B.z);
-                uvs.push(C.x, C.z);
-
-                uvs.push(C.x, C.z);
-                uvs.push(D.x, D.z);
-                uvs.push(A.x, A.z);
-
-                n = Vector3.cross(
-                    Vector3.add(B, Vector3.multiply(A, -1)),
-                    Vector3.add(C, Vector3.multiply(A, -1))
-                );
-                n.normalize();
-
-                for (let i = 0; i < 3; ++ i) {
-
-                    normals.push(n.x, n.y, n.z);
-                }
-
-                n = Vector3.cross(
-                    Vector3.add(B, Vector3.multiply(D, -1)),
-                    Vector3.add(C, Vector3.multiply(D, -1))
-                );
-                n.normalize();
-
-                for (let i = 0; i < 3; ++ i) {
-
-                    normals.push(n.x, n.y, n.z);
-                }
-            }
-        }
-
-        for (let i = 0; i < vertices.length/3; ++ i) {
-
-            colors.push(color.x, color.y, color.z);
-            indices.push(indices.length);
-        }
-
-        return new Mesh(gl, 
-            vertices, uvs, normals, colors, indices);
-    }
-    */
 
 
     generateMesh(gl, color) {
@@ -307,14 +249,13 @@ export class Terrain {
         let stepx = this.scale / this.width;
         let stepz = this.scale / this.depth;
 
-        let x = o.pos.x + this.scale/2;
-        let z = o.pos.z + this.scale/2;
+        let tx = Math.floor((o.pos.x + this.scale/2) / stepx);
+        let tz = Math.floor((o.pos.z + this.scale/2) / stepz);
 
-        let tx = Math.floor(x / stepx);
-        let tz = Math.floor(z / stepz);
-
+        /*
         if (tx < 0 || tz < 0 || tx >= this.width || tz >= this.depth)
             return false;
+*/
 
         let px = tx*stepx - this.scale/2;
         let pz = tz*stepz - this.scale/2;

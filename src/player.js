@@ -168,12 +168,12 @@ export class Player {
         if(Math.abs(n.y) < EPS ) return false;
         
         n.normalize();
-   
+     
         // Check if below the plane
         let cy = -(this.pos.x*n.x + this.pos.z*n.z - Vector3.dot(A, n)) / n.y;
         if(this.pos.y > cy - TOP_MARGIN &&
             this.speed.y > 0.0) {
-    
+
             this.speed.y = 0.0;
             this.pos.y = cy;
 

@@ -1,11 +1,7 @@
 
 export function negMod(m, n) {
 
-    if(m < 0) {
-
-        return n - (-m % n);
-    }
-    return m % n;
+    return (m % n + n) % n;
 }
 
 
