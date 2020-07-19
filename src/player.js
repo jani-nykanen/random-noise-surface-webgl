@@ -11,9 +11,6 @@ export class Player {
         this.pos = pos.clone();
 
         this.angle = new Vector3(Math.PI/2.0, Math.PI/2.0, 0);
-        this.angleTarget = new Vector3(0, 0, 0);
-        this.angleSpeed = this.angleTarget.clone();
-        this.angleFriction = new Vector3(0.025, 0.025, 0.025);
 
         this.speed = new Vector3();
         this.target = this.speed.clone();
@@ -22,6 +19,9 @@ export class Player {
         this.radius = 0.225;
         
         this.height = 0.5;
+
+        this.jumpTimer = 0;
+        this.canJump = false;
     }
 
         
@@ -30,43 +30,66 @@ export class Player {
         const TURN_SPEED = 0.010;
         const MOVE_SPEED = 0.033;
         const GRAVITY = 0.1;
+        const JUMP_TIME = 15;
 
         this.target.y = GRAVITY;
 
         this.angle.y += -ev.input.mouseDelta.x * TURN_SPEED;
         this.angle.x += -ev.input.mouseDelta.y * TURN_SPEED;
         
-        let dir = new Vector3(0, 0, 0);
-        if (ev.input.actions["up"].state & State.DownOrPressed) {
+        let dir, angle, speed;
+        let jumpButtonState = ev.input.actions["fire1"].state;
+        if (this.canJump) {
+            
+            dir = new Vector3(0, 0, 0);
+            if (ev.input.actions["up"].state & State.DownOrPressed) {
 
-            dir.z = 1;
+                dir.z = 1;
+            }
+            else if (ev.input.actions["down"].state & State.DownOrPressed) {
+
+                dir.z = -1;
+            }
+            if (ev.input.actions["left"].state & State.DownOrPressed) {
+
+                dir.x = -1;
+            }
+            else if (ev.input.actions["right"].state & State.DownOrPressed) {
+
+                dir.x = 1;
+            }
+            dir.normalize(false);
+
+            angle = (this.angle.y-Math.PI/2) + Math.atan2(dir.z, dir.x);
+            speed = dir.length() * MOVE_SPEED;
+
+            this.target.x = Math.cos(angle) * speed;
+            this.target.z = Math.sin(angle) * speed;
+
+            if (this.canJump &&
+                jumpButtonState == State.Pressed) {
+
+                this.jumpTimer = JUMP_TIME;
+                this.canJump = false;
+
+                this.speed = this.target.clone();
+            }
         }
-        else if (ev.input.actions["down"].state & State.DownOrPressed) {
+        else {
 
-            dir.z = -1;
+            if (jumpButtonState == State.Released ||
+                jumpButtonState == State.Up) {
+
+                this.jumpTimer = 0;
+            }
         }
-        if (ev.input.actions["left"].state & State.DownOrPressed) {
-
-            dir.x = -1;
-        }
-        else if (ev.input.actions["right"].state & State.DownOrPressed) {
-
-            dir.x = 1;
-        }
-        dir.normalize(false);
-
-        let angle = (this.angle.y-Math.PI/2) + Math.atan2(dir.z, dir.x);
-        let speed = dir.length() * MOVE_SPEED;
-
-        this.target.x = Math.cos(angle) * speed;
-        this.target.z = Math.sin(angle) * speed;
     }
-
 
 
     move(ev) {
 
         const ANGLE_LIMIT = Math.PI/3;
+        const JUMP_SPEED = -0.05;
 
         this.speed.x = updateSpeedAxis(this.speed.x, 
             this.target.x, this.friction.x * ev.step);
@@ -75,29 +98,22 @@ export class Player {
         this.speed.z = updateSpeedAxis(this.speed.z, 
             this.target.z, this.friction.z * ev.step);
 
+        if (this.jumpTimer > 0) {
+
+            this.jumpTimer -= ev.step;
+            this.speed.y = JUMP_SPEED;
+        }
+
         this.pos.x += this.speed.x * ev.step;
         this.pos.y += this.speed.y * ev.step;
         this.pos.z += this.speed.z * ev.step;
 
-        this.angleSpeed.x = updateSpeedAxis(this.angleSpeed.x, 
-            this.angleTarget.x, this.angleFriction.x * ev.step);
-        this.angleSpeed.y = updateSpeedAxis(this.angleSpeed.y, 
-            this.angleTarget.y, this.angleFriction.y * ev.step);
-        this.angleSpeed.z = updateSpeedAxis(this.angleSpeed.z, 
-            this.angleTarget.z, this.angleFriction.z * ev.step);
-
-        this.angle.x += this.angleSpeed.x * ev.step;
-        this.angle.y += this.angleSpeed.y * ev.step;
-        this.angle.z += this.angleSpeed.z * ev.step;
-
-        if (Math.abs(this.angle.x - Math.PI/2) > ANGLE_LIMIT) {
+        this.angle.x = clamp(this.angle.x, 
+            Math.PI/2 - ANGLE_LIMIT,
+            Math.PI/2 + ANGLE_LIMIT);
         
-            this.angle.x = clamp(this.angle.x, 
-                Math.PI/2 - ANGLE_LIMIT,
-                Math.PI/2 + ANGLE_LIMIT);
-            this.angleSpeed.x = 0;
-        }
         this.angle.y = negMod(this.angle.y, Math.PI*2);
+        
     }
 
 
@@ -105,6 +121,8 @@ export class Player {
 
         this.control(ev);
         this.move(ev);
+
+        this.canJump = false;
     }
 
 
@@ -158,6 +176,9 @@ export class Player {
     
             this.speed.y = 0.0;
             this.pos.y = cy;
+
+            this.canJump = true;
+            this.jumpTimer = 0;
 
             return true;
         }

@@ -23,6 +23,7 @@ export class ApplicationCore {
                 .addAction("right", "ArrowRight", "KeyD")
                 .addAction("down", "ArrowDown", "KeyS")
                 .addAction("start", "Enter", null)
+                .addAction("fire1", "Space")
         };
 
 

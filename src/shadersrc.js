@@ -29,7 +29,6 @@ const VERTEX_SOURCE = {
 "noTextureLight" : 
 
 `attribute vec3 vertexPos;
-attribute vec2 vertexUV;
 attribute vec3 vertexNormal;
 attribute vec3 vertexColor;
    
@@ -87,7 +86,6 @@ void main() {
 "noTexture" :
 
 `attribute vec3 vertexPos;
-attribute vec2 vertexUV;
 attribute vec3 vertexNormal;
 attribute vec3 vertexColor;
    

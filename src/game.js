@@ -14,7 +14,7 @@ export class GameScene extends Scene {
         this.player = new Player(new Vector3(0.0001, 0.0, 0.0001));
         this.terrain = new Terrain(10.0,
             (new Heightmap(32, 32)).testWaves(0.05), 
-            new Vector3(0.75, 1, 0.5));
+            new Vector3(1.0, 1.5, 0.5));
     }
 
 
