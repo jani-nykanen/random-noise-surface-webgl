@@ -1,8 +1,10 @@
-## Project "The Old Reality"
+## Perlin Noise Surface WebGL
 
-Info here.
+^ The title says it all.
 
 ## Building
+
+Too see how small the whole demo fits, run:
 
 ```
 ./tools/compile.sh
