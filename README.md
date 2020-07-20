@@ -1,10 +1,10 @@
-## Perlin Noise Surface WebGL
+## Random Noise Surface WebGL
 
-^ The title says it all.
+A 3D WebGL demo where random noise is used to generated a surface one can explore.
 
 ## Playing
 
-[Click here](https://jani-nykanen.github.io/perlin-noise-surface-webgl/dist/index.html)
+[Click here](https://jani-nykanen.github.io/random-noise-surface-webgl/dist/index.html)
 
 ## Building
 

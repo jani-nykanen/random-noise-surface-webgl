@@ -30,26 +30,26 @@ export class Heightmap {
     }
 
 
-    static upperHalfSphereSurface(radius, height) {
+    static upperHalfSphereSurface(width, depth, radius, height) {
 
 
-        let hmap = new Heightmap(radius*2, radius*2);
+        let hmap = new Heightmap(width, depth);
 
         let y;
-        for (let z = 0; z < radius*2; ++ z) {
+        for (let z = 0; z < depth; ++ z) {
 
-            for (let x = 0; x < radius*2; ++ x) {
+            for (let x = 0; x < width; ++ x) {
 
-                if (Math.hypot(x - radius, z - radius) >= radius) {
+                if (Math.hypot(x - width/2, z - depth/2) >= radius) {
 
-                    y = height / Math.SQRT2;
+                    y = 0.0;
                 }
                 else {
 
-                    y = height * (1.0 - Math.sqrt(1 - Math.pow((x-radius)/radius, 2)) * 
-                                 Math.sqrt(1 - Math.pow((z-radius)/radius, 2)));
+                    y = height * Math.sqrt(1 - Math.pow((x-width/2)/radius, 2)) * 
+                                 Math.sqrt(1 - Math.pow((z-depth/2)/radius, 2));
                 }
-                hmap.data[z*radius*2+x] = y;
+                hmap.data[z*width+x] = y;
             }
         }
 
@@ -64,7 +64,25 @@ export class Heightmap {
         hmap.data = Array.from(noise);
         for (let i = 0; i < hmap.data.length; ++ i) {
 
-            hmap.data[i] *= height;
+            hmap.data[i] *= -height;
+        }
+
+        return hmap;
+    }
+
+
+    static multiply(h1, h2) {
+
+        if (h1.width != h2.width || h1.height != h2.height) {
+
+            throw "Heightmaps must have equal size!";
+        }
+
+        let hmap = new Heightmap(h1.width, h1.height);
+
+        for (let i = 0; i < h1.data.length; ++ i) {
+
+            hmap.data[i] = h1.data[i] * h2.data[i];
         }
 
         return hmap;

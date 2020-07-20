@@ -14,10 +14,8 @@ export class GameScene extends Scene {
 
         this.player = new Player(new Vector3(0.0001, 0.0, 0.0001));
         this.terrain = new Terrain(40.0,
-            Heightmap.fromNoise(generateNoise(128, 128, 1, 3, (new Date()).getTime() | 0, 256), 
-             128, 128, 1.00), 
-            //Heightmap.upperHalfSphereSurface(64, 0.5),
-    
+            Heightmap.fromNoise(generateNoise(128, 128, 1, 3, (new Date()).getTime() | 0), 
+                128, 128, 1.00),
             new Vector3(1.5, 1.0, 0.5));
     }
 
