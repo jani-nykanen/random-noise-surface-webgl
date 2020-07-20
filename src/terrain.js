@@ -30,22 +30,27 @@ export class Heightmap {
     }
 
 
-    static testSurfaceWaves(height, width, depth, latitude) {
+    static upperHalfSphereSurface(radius, height) {
 
-        let hmap = new Heightmap(width, depth);
 
-        latitude = (latitude * Math.PI*2) / Math.max(width, depth);
-        for (let y = 0; y < depth; ++ y) {
+        let hmap = new Heightmap(radius*2, radius*2);
 
-            for (let x = 0; x < width; ++ x) {
+        let y;
+        for (let z = 0; z < radius*2; ++ z) {
 
-                hmap.data[y*width + x] = height * 
-                    0.5 * (
-                        Math.cos(x * latitude) + 
-                        Math.sin(y * latitude)
-                    );
+            for (let x = 0; x < radius*2; ++ x) {
+
+                if (Math.hypot(x - radius, z - radius) >= radius) {
+
+                    y = height / Math.SQRT2;
+                }
+                else {
+
+                    y = height * (1.0 - Math.sqrt(1 - Math.pow((x-radius)/radius, 2)) * 
+                                 Math.sqrt(1 - Math.pow((z-radius)/radius, 2)));
+                }
+                hmap.data[z*radius*2+x] = y;
             }
-
         }
 
         return hmap;
@@ -175,8 +180,8 @@ export class Terrain {
 
         let i = y*this.width + x;
         let j = y*this.width + x + 1;
-        let k = (y+1)*this.width + x + 1;
-        // let l = (y+1)*this.width + x;
+        // let k = (y+1)*this.width + x + 1;
+        let l = (y+1)*this.width + x;
 
         // TODO: We approximate two surface
         // normals with just the other normal.
@@ -196,9 +201,9 @@ export class Terrain {
         // TODO: What if k == l ?
         let v2 = Vector3.normalize(
             new Vector3(
-                data[k*3] - ox, 
-                data[k*3 + 1] - oy, 
-                data[k*3 + 2] - oz
+                data[l*3] - ox, 
+                data[l*3 + 1] - oy, 
+                data[l*3 + 2] - oz
         ), false);
 
         return  Vector3.cross(v1, v2);

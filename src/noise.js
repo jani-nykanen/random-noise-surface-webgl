@@ -1,5 +1,4 @@
-import { Vector2 } from "./vector.js";
-import { lerp } from "./util.js";
+import { negMod, clamp } from "./util.js";
 
 
 class RNG {
@@ -19,7 +18,7 @@ class RNG {
     }
 }
 
-
+/*
 let constructGradient = function(rng, count) {
 
     let grad = new Array(count);
@@ -99,4 +98,128 @@ export function perlinNoise(w, h, jump, seed, gradientCount) {
     }
 
     return out;
+}
+*/
+
+function blurPixel(pixels, x, y, w, h) {
+	
+	let blurArr = new Array(3*3);
+	blurArr.fill(0);
+	
+	let weight;
+	let middle = y * w + x;
+	for (let j = -1; j <= 1; ++ j) {
+		
+		for (let i = -1; i <= 1; ++ i) {
+			
+			if (i == j && i == 0) continue;
+			
+			weight = Math.abs(i) == Math.abs(j) ? 1.0/Math.SQRT2 : 0.5;
+			
+			blurArr[(j+1)*3 + (i+1)] = 
+				(1.0-weight) * pixels[middle] +
+				weight * pixels[negMod(y+j, h) * w + negMod(x + i, w)];
+		}
+	}
+	
+	let v;
+	for (let j = -1; j <= 1; ++ j) {
+		
+		for (let i = -1; i <= 1; ++ i) {
+		
+			v = blurArr[(j+1)*3+(i+1)];
+			pixels[negMod(y+j, h) * w + negMod(x + i, w)] = v;
+		}
+	}
+}
+
+
+function scalePixelArray(pixels, w, h, scale) {
+	
+	let nw = w * scale;
+	let nh = h * scale;
+	
+	let out = new Array(nw * nh);
+	out.fill(0);
+	
+	let step = 1.0 / scale;
+	
+	let dx = 0.0;
+	let dy = 0.0;
+	
+	let tl, tr, bl, br;
+	
+    let w1, w2;
+    let px, py;
+	
+	for (let y = 0; y < nh; ++ y) {
+		
+		for (let x = 0; x < nw; ++ x) {
+			
+			px = dx | 0;
+			py = dy | 0;
+			
+			w1 = 1.0 - (dx - px);
+			w2 = 1.0 - (dy - py);
+			
+			tl = pixels[py * w + px];
+			tr = pixels[py * w + negMod(px+1,w)];
+			bl = pixels[negMod(py+1, h) * w + px];
+			br = pixels[negMod(py+1, h) * w + negMod(px+1,w)];
+			
+			out[y * nw + x] = 
+				w2 * (w1 * tl + (1-w1) * tr) +
+				(1-w2) * (w2 * bl + (1-w2) * br);
+			
+			dx += step;
+		}
+		
+		dy += step;
+		dx = 0;
+	}
+	
+	return out;
+}
+
+
+export function generateNoise(w, h, scale, blurRepeat, seed) {
+    
+    const RAND_MAX = 256;
+
+    let rand = new RNG( (1 << 31)-1, 1103515245, 12345, seed);
+
+	// Generate the random base noise
+	let raw = (new Array((w+2)*(h+2))).fill(
+        null).map(() => (rand.next() % RAND_MAX)/RAND_MAX );
+	
+	// Blur
+	for (let repeat = 0; repeat < blurRepeat; ++ repeat) {
+		
+		for (let y = 0; y < h+2; ++ y) {
+			
+			for (let x = 0; x < w+2; ++ x) {
+				
+				blurPixel(raw, x, y, w+2, h+2);
+			}
+		}
+	}
+	
+	// Remove edges
+	let out = new Array(w*h);
+	for (let y = 1; y < h+1; ++ y) {
+		
+		for (let x = 1; x < w+1; ++ x) {
+			
+			out[(y-1)*w + x-1] = raw[y*(w+2)+x];
+		}
+	}
+	
+	scale = scale | 0;
+	if (scale > 1) {
+		
+		out = scalePixelArray(out, w, h, scale);
+	}
+	out = out.map(x => clamp(x, 0, 1));
+	
+	return out;
 }
