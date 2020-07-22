@@ -223,3 +223,70 @@ export function generateNoise(w, h, scale, blurRepeat, seed) {
 	
 	return out;
 }
+
+
+class Noise {
+
+
+	constructor (w, h, seed) {
+		
+		this.w = w;
+		this.h = h;
+		
+		let rand = new RNG( (1 << 31)-1, 1103515245, 12345, seed);
+
+		this.data = (new Array(w*h)).fill(null).map(
+			() => (rand.next() % 1024)/1024
+		);
+	}
+	
+		
+	f(x, y) {
+		
+		return this.data[negMod(y, this.h) * this.w + negMod(x, this.w)];
+	}
+	
+}
+
+
+export function bilinearInterpolation(x, y, noise) {
+	
+	x = negMod(x, noise.w);
+	y = negMod(y, noise.h);
+	
+	let x1 = x | 0;
+	let y1 = y | 0;
+	let x2 = x1 + 1;
+	let y2 = y1 + 1;
+	
+	return  noise.f(x1, y1) * (x2 - x) * (y2 - y) + 
+			noise.f(x2, y1) * (x - x1) * (y2 - y) +
+			noise.f(x1, y2) * (x2 - x) * (y - y1) +
+		    noise.f(x2, y2) * (x - x1) * (y - y1);
+}
+
+
+export function generateNoise2(w, h, scale, seed) {
+
+	let noise = new Noise(w, h, seed);
+
+	let sw = w*scale;
+	let sh = h*scale;
+	let noiseMap = new Array(sw, sh);
+	
+	let dx, dy;
+	for (let y = 0; y < sw; ++ y) {
+		
+		for (let x = 0; x < sh; ++ x) {
+			
+			
+			dx = x / sw * noise.w;
+			dy = y / sh * noise.h;
+			
+			noiseMap[y * sw + x] = 
+				bilinearInterpolation(dx, dy, noise);
+		}
+	}
+
+	return noiseMap;
+}
